@@ -4,10 +4,11 @@ metadata:
   name: finops-config
   namespace: finops-bank
 data:
-  SPRING_DATASOURCE_URL_AUTH: "jdbc:postgresql://postgres-db.finops-bank.svc.cluster.local:5432/finops_auth"
-  SPRING_DATASOURCE_URL_CORE: "jdbc:postgresql://postgres-db.finops-bank.svc.cluster.local:5432/finops_core_banking"
+  SPRING_DATASOURCE_URL_AUTH: "jdbc:postgresql://postgres-db.finops-bank.svc.cluster.local:5432/finops_auth?sslmode=disable"
+  SPRING_DATASOURCE_URL_CORE: "jdbc:postgresql://postgres-db.finops-bank.svc.cluster.local:5432/finops_core_banking?sslmode=disable"
   
-  GRPC_CLIENT_RISK_ADDRESS: "static://credit-risk-service:9090"
-  
-  AWS_ENDPOINT_URL: "http://host.docker.internal:4566"
-  AWS_REGION: "us-east-1"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "validate"
+  SPRING_PROFILES_ACTIVE: "default"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,prometheus"
+  LOGGING_LEVEL_ROOT: "INFO"
+  LOGGING_LEVEL_COM_FINOPS: "DEBUG"

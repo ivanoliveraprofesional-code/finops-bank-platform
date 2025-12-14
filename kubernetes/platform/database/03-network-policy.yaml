@@ -11,7 +11,9 @@ spec:
   - Ingress
   ingress:
   - from:
-    - podSelector: {} # <--- This empty bracket means "Allow ALL pods in this namespace"
+    - namespaceSelector:
+        matchLabels:
+          name: finops-bank
     ports:
     - protocol: TCP
       port: 5432
