@@ -32,4 +32,4 @@ public class RiskAssessmentService implements AssessRiskUseCase {
                 .rejectionReason(null)
                 .build();
     }
-} 
+}
