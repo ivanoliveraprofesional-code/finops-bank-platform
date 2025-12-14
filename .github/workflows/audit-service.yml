@@ -10,6 +10,10 @@ on:
     paths:
       - 'backend/audit-service/**'
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   audit-service-ci:
     uses: ./.github/workflows/reusable-java-build.yml

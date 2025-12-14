@@ -9,6 +9,10 @@ on:
     paths:
       - 'backend/auth-service/**'
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   auth-service-ci:
     uses: ./.github/workflows/reusable-java-build.yml

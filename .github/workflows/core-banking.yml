@@ -10,6 +10,10 @@ on:
     paths:
       - 'backend/core-banking/**'
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   core-banking-ci:
     uses: ./.github/workflows/reusable-java-build.yml
