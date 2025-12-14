@@ -18,7 +18,7 @@ spec:
         version: v1
       annotations:
         sidecar.istio.io/inject: "true"
-        traffic.sidecar.istio.io/excludeOutboundPorts: "5432"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "5432,4566"
     spec:
       containers:
       - name: auth-service
