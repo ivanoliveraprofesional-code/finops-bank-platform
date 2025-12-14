@@ -23,6 +23,8 @@ target/
 *.tfstate
 *.tfstate.backup
 *.tfplan
+terraform/*.pem
+**/*.pem
 .terraform.lock.hcl
 private_key.pem
 
