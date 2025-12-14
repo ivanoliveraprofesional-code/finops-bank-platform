@@ -29,6 +29,8 @@ spec:
         env:
         - name: SERVER_PORT
           value: "8080"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgres-db:5432/finops_core"
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
@@ -39,11 +41,6 @@ spec:
             secretKeyRef:
               name: db-credentials
               key: POSTGRES_PASSWORD
-        - name: SPRING_DATASOURCE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: finops-config
-              key: SPRING_DATASOURCE_URL_CORE
         resources:
           limits:
             memory: "512Mi"
