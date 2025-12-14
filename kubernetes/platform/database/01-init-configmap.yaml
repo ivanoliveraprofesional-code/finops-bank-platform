@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-script
+data:
+  init.sql: |
+    -- 1. Crear Bases de Datos Lógicas
+    CREATE DATABASE finops_auth;
+    CREATE DATABASE finops_core_banking;
+
+    -- 2. Crear Usuarios (Roles) - En prod, las passwords vendrían inyectadas
+    -- Por ahora usamos placeholders que coinciden con lo que espera la App en Dev
+    CREATE USER finops_app_user WITH ENCRYPTED PASSWORD 'app_password_placeholder';
+    CREATE USER finops_viewer WITH ENCRYPTED PASSWORD 'viewer_password_placeholder';
+
+    -- 3. Asignar Permisos (Grant Least Privilege)
+    GRANT ALL PRIVILEGES ON DATABASE finops_auth TO finops_app_user;
+    GRANT ALL PRIVILEGES ON DATABASE finops_core_banking TO finops_app_user;
+    
+    -- El viewer solo puede conectar (los SELECT se dan por tabla luego)
+    GRANT CONNECT ON DATABASE finops_core_banking TO finops_viewer;

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package com.finops.bank.risk;
+
+option java_multiple_files = true;
+option java_package = "com.finops.bank.risk.generated";
+
+service RiskAssessmentService {
+  rpc AssessCreditRisk (CreditRiskRequest) returns (CreditRiskResponse);
+}
+
+message CreditRiskRequest {
+  string userId = 1;
+  double amount = 2;
+}
+
+message CreditRiskResponse {
+  bool isApproved = 1;
+  string rejectionReason = 2;
+  RiskLevel riskLevel = 3;
+}
+
+enum RiskLevel {
+  LOW = 0;
+  MEDIUM = 1;
+  HIGH = 2;
+  CRITICAL = 3;
+}

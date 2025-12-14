@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: finops-bank
+  labels:
+    app: auth-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+        tier: backend
+      annotations:
+        sidecar.istio.io/proxyCPU: "20m"
+        sidecar.istio.io/proxyMemory: "50Mi"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+      - name: auth-service
+        image: finops/auth-service:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVER_PORT
+          value: "8080"
+        - name: MANAGEMENT_SERVER_PORT
+          value: "8082"
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: finops-config
+              key: SPRING_DATASOURCE_URL_AUTH
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: DB_PASSWORD
+        - name: JWT_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: JWT_PRIVATE_KEY
+        - name: JWT_PUBLIC_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: JWT_PUBLIC_KEY
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 8080
+        - containerPort: 8082

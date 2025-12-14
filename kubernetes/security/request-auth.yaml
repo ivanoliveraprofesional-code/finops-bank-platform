@@ -1,0 +1,41 @@
+# 1. AUTHENTICATION
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: jwt-auth
+  namespace: finops-bank
+spec:
+  selector:
+    matchLabels:
+      security: protected
+  jwtRules:
+  - issuer: "finops-bank-auth"
+    jwksUri: "http://auth-service.finops-bank.svc.cluster.local:8080/.well-known/jwks.json"
+    forwardOriginalToken: true
+---
+# 2. AUTHORIZATION
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: edge-security-policy
+  namespace: finops-bank
+spec:
+  selector:
+    matchLabels:
+      security: protected
+  action: ALLOW
+  rules:
+  - to:
+    - operation:
+        paths: 
+        - "/auth/*"
+        - "/.well-known/*"
+        - "/actuator/health"
+        
+  - from:
+    - source:
+        requestPrincipals: ["*"]
+    to:
+    - operation:
+        paths: 
+        - "/api/*"

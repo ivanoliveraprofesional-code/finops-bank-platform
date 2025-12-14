@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-access-control
+spec:
+  podSelector:
+    matchLabels:
+      tier: database # Aplica al StatefulSet de Postgres
+  policyTypes:
+  - Ingress
+  ingress:
+  # Regla 1: Permitir acceso desde Microservicios (Backend)
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: backend
+    ports:
+    - protocol: TCP
+      port: 5432
+  
+  # Regla 2: Permitir acceso desde el Bastion (Debug)
+  - from:
+    - podSelector:
+        matchLabels:
+          app: bastion-sql
+    ports:
+    - protocol: TCP
+      port: 5432
+      
+  # Regla Implícita: Todo lo demás es DROP.

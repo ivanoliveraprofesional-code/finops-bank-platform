@@ -1,0 +1,193 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="29.2.4">
+  <diagram name="Página-1" id="DqXJcGwk5jYsWJLPuXfS">
+    <mxGraphModel dx="2253" dy="1954" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-4" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="&lt;h4&gt;User&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="60" width="30" x="-320" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-6" edge="1" parent="1" source="U6eH6cejgkD8PrPdRSeU-4" style="endArrow=classic;html=1;rounded=0;" target="U6eH6cejgkD8PrPdRSeU-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="140" y="170" as="sourcePoint" />
+            <mxPoint x="70" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-7" connectable="0" parent="U6eH6cejgkD8PrPdRSeU-6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;h4&gt;Recibe HTTPS del Cliente&lt;/h4&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.1889" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-46" parent="1" style="swimlane;startSize=0;fillColor=#99FFFF;strokeColor=#6c8ebf;glass=1;" value="Cluster Namespace" vertex="1">
+          <mxGeometry height="930" width="1260" x="330" y="-230" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-47" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Kubernetes.svg;" value="" vertex="1">
+          <mxGeometry height="48" width="50" x="1180" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-25" parent="U6eH6cejgkD8PrPdRSeU-46" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.sqs;" value="Amazon SQS" vertex="1">
+          <mxGeometry height="100" width="80" x="450" y="675" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-21" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/compute/Azure_Spring_Cloud.svg;" value="&lt;h4&gt;Audit Service&lt;br&gt;&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="68" width="68" x="940" y="691" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-24" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-21" style="endArrow=classic;html=1;rounded=0;" target="U6eH6cejgkD8PrPdRSeU-25" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="560" y="700" as="sourcePoint" />
+            <mxPoint x="230" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-51" connectable="0" parent="U6eH6cejgkD8PrPdRSeU-24" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;h4&gt;Lee de SQS y escribe en DynamoDB.&lt;/h4&gt;" vertex="1">
+          <mxGeometry relative="1" x="0.1256" y="3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-55" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/vista_terminal.svg;" value="&lt;h4&gt;Punto de entrada para debug manual.&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="50" width="32.5" x="40" y="691" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-14" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/compute/Azure_Spring_Cloud.svg;" value="&lt;h3&gt;Core Banking Service&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="68" width="68" x="450" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-23" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-14" style="endArrow=classic;html=1;rounded=0;" target="U6eH6cejgkD8PrPdRSeU-25" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="97.1207142857142" y="340" as="sourcePoint" />
+            <mxPoint x="100.8707142857142" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-65" connectable="0" parent="U6eH6cejgkD8PrPdRSeU-23" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;h4&gt;Publica Evento&lt;/h4&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.0048" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-15" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/compute/Azure_Spring_Cloud.svg;" value="&lt;h4&gt;Credit/Risk Service&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="68" width="68" x="880" y="334" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-18" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-14" style="endArrow=classic;html=1;rounded=0;exitX=0.985;exitY=0.441;exitDx=0;exitDy=0;exitPerimeter=0;" target="U6eH6cejgkD8PrPdRSeU-15" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="350" y="370" as="sourcePoint" />
+            <mxPoint x="400" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-19" connectable="0" parent="U6eH6cejgkD8PrPdRSeU-18" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;h4&gt;&lt;span data-path-to-node=&quot;9,4,3,0,0&quot;&gt;Calcula riesgo.&lt;/span&gt;&lt;span data-path-to-node=&quot;9,4,3,0,2&quot;&gt;&lt;span class=&quot;citation-227&quot;&gt;&amp;nbsp;Conecta vía &lt;/span&gt;&lt;b&gt;&lt;span class=&quot;citation-227&quot;&gt;gRPC&lt;/span&gt;&lt;/b&gt;&lt;span class=&quot;citation-227&quot;&gt; desde Core Banking.&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/h4&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.0122" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-34" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="&lt;h4&gt;Local Postgres Pod&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="64" width="48" x="1110" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-37" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-15" style="endArrow=classic;html=1;rounded=0;" target="U6eH6cejgkD8PrPdRSeU-34" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1110" y="340" as="sourcePoint" />
+            <mxPoint x="1160" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-1" parent="U6eH6cejgkD8PrPdRSeU-46" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#8C4FFF;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.application_load_balancer;" value="&lt;h4&gt;Istio Ingress Gateway&lt;br&gt;(Autentica y autoriza peticiones)&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="78" width="78" x="10" y="329" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-60" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-1" style="endArrow=classic;html=1;rounded=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="U6eH6cejgkD8PrPdRSeU-55" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="30" y="320" as="sourcePoint" />
+            <mxPoint x="80" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-32" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-1" style="endArrow=classic;html=1;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" target="U6eH6cejgkD8PrPdRSeU-14" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="100" y="310" as="sourcePoint" />
+            <mxPoint x="190" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-33" connectable="0" parent="U6eH6cejgkD8PrPdRSeU-32" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;h4&gt;&lt;span data-path-to-node=&quot;9,3,3,0,0&quot;&gt;Maneja cuentas. &lt;/span&gt;&lt;span data-path-to-node=&quot;9,3,3,0,1&quot;&gt;&lt;span class=&quot;citation-228&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span data-path-to-node=&quot;9,3,3,0,2&quot;&gt;Orquesta transacciones.&lt;/span&gt;&lt;/h4&gt;" vertex="1">
+          <mxGeometry relative="1" x="0.0177" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ZgcK6FRjyLglFRLeF-_-13" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-1" style="endArrow=none;html=1;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="30" y="200" as="sourcePoint" />
+            <mxPoint x="49" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_BU-rKUERpRrRoYvhmjo-2" connectable="0" parent="5ZgcK6FRjyLglFRLeF-_-13" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;h4&gt;Obtiene JWKS/ Login&lt;/h4&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.3712" y="-2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ZgcK6FRjyLglFRLeF-_-14" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" style="endArrow=classic;html=1;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" target="U6eH6cejgkD8PrPdRSeU-9" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="50" y="100" as="sourcePoint" />
+            <mxPoint x="100" y="40" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-9" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/compute/Azure_Spring_Cloud.svg;" value="&lt;h4&gt;Auth Service&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="68" width="68" x="170" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-35" parent="U6eH6cejgkD8PrPdRSeU-46" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="&lt;h4&gt;Local Postgres Pod&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="64" width="48" x="790" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-36" edge="1" parent="U6eH6cejgkD8PrPdRSeU-46" source="U6eH6cejgkD8PrPdRSeU-9" style="endArrow=classic;html=1;rounded=0;" target="U6eH6cejgkD8PrPdRSeU-35" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="960" y="400" as="sourcePoint" />
+            <mxPoint x="1010" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-48" parent="1" style="swimlane;startSize=0;" value="" vertex="1">
+          <mxGeometry height="440" width="1270" x="350" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-49" parent="U6eH6cejgkD8PrPdRSeU-48" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.cloud_2;fillColor=#F58534;gradientColor=none;" value="" vertex="1">
+          <mxGeometry height="75" width="75" x="1168" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-52" parent="U6eH6cejgkD8PrPdRSeU-48" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.dynamodb;" value="Amazon DynamoDB" vertex="1">
+          <mxGeometry height="110" width="80" x="920" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-61" parent="U6eH6cejgkD8PrPdRSeU-48" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.secrets_manager;" value="&lt;h4&gt;Secrets Manager&lt;br&gt;&amp;nbsp;(Guarda contraseñas de DB encriptadas.)&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="78" width="78" x="570" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-64" parent="U6eH6cejgkD8PrPdRSeU-48" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.kms;fillColor=#759C3E;gradientColor=none;" value="KMS (CMK)&lt;h4&gt;Llave maestra para encriptar secretos y logs.&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="93" width="76.5" x="140" y="128" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-53" edge="1" parent="1" source="U6eH6cejgkD8PrPdRSeU-21" style="endArrow=classic;html=1;rounded=0;" target="U6eH6cejgkD8PrPdRSeU-52" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1310" y="780" as="sourcePoint" />
+            <mxPoint x="1360" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-54" connectable="0" parent="U6eH6cejgkD8PrPdRSeU-53" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;h4&gt;Audit Logs Table&lt;/h4&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.1501" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-66" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="&lt;h4&gt;Bank Operator&lt;/h4&gt;" vertex="1">
+          <mxGeometry height="60" width="30" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="U6eH6cejgkD8PrPdRSeU-73" edge="1" parent="1" source="U6eH6cejgkD8PrPdRSeU-66" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;" target="U6eH6cejgkD8PrPdRSeU-55" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="290" y="490" as="sourcePoint" />
+            <mxPoint x="420" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ZgcK6FRjyLglFRLeF-_-8" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" target="U6eH6cejgkD8PrPdRSeU-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="160" y="140" as="sourcePoint" />
+            <mxPoint x="280" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ZgcK6FRjyLglFRLeF-_-10" connectable="0" parent="5ZgcK6FRjyLglFRLeF-_-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="/api/*" vertex="1">
+          <mxGeometry relative="1" x="-0.3276" y="-2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ZgcK6FRjyLglFRLeF-_-9" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="160" y="160" as="sourcePoint" />
+            <mxPoint x="320" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5ZgcK6FRjyLglFRLeF-_-11" connectable="0" parent="5ZgcK6FRjyLglFRLeF-_-9" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="/auth/login" vertex="1">
+          <mxGeometry relative="1" x="-0.2243" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

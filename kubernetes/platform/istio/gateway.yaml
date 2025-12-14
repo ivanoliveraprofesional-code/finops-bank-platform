@@ -1,0 +1,66 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: finops-gateway
+  namespace: finops-bank
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: banking-routes
+  namespace: finops-bank
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - finops-gateway
+  http:
+  # ---------------------------
+  # 1. Auth Service Routes
+  # ---------------------------
+  # Public: Login, Register, JWKS
+  - match:
+    - uri:
+        prefix: /auth
+    - uri:
+        prefix: /.well-known
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 8080
+
+  # Protected: User Management (CRUD)
+  - match:
+    - uri:
+        prefix: /api/users
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 8080
+
+  # ---------------------------
+  # 2. Core Banking Routes
+  # ---------------------------
+  # Protected: Accounts & Transactions
+  - match:
+    - uri:
+        prefix: /api/accounts
+    - uri:
+        prefix: /api/transactions
+    route:
+    - destination:
+        host: core-banking
+        port:
+          number: 8080

@@ -1,0 +1,23 @@
+server:
+  port: 8083
+
+grpc:
+  server:
+    port: 9090
+
+spring:
+  application:
+    name: credit-risk-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [TraceID:%X{traceId}] %logger{36} - %msg%n"

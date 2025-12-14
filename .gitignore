@@ -1,0 +1,38 @@
+# --- IDEs ---
+.idea/
+.vscode/
+*.swp
+*.iml
+.settings/
+.classpath
+.project
+bin/
+
+# --- Java / Maven ---
+target/
+*.jar
+*.war
+*.ear
+*.class
+# Ignora código generado para no ensuciar PRs
+**/generated-sources/
+**/generated-test-sources/
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+.terraform.lock.hcl
+
+# --- LocalStack / AWS Utils ---
+warmup_output.json
+*.tmp
+*.log
+
+# --- OS Specific ---
+Thumbs.db
+.DS_Store
+
+# --- Scripts Temporary Files ---
+scripts/*.py

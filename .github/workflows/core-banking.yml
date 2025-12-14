@@ -1,0 +1,19 @@
+name: "Core Banking Pipeline"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'backend/core-banking/**'
+      - '.github/workflows/reusable-java-build.yml'
+  pull_request:
+    paths:
+      - 'backend/core-banking/**'
+
+jobs:
+  core-banking-ci:
+    uses: ./.github/workflows/reusable-java-build.yml
+    with:
+      service_name: core-banking-service
+      working_directory: backend/core-banking
+    secrets: inherit

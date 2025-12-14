@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credit-risk-service
+  namespace: finops-bank
+  labels:
+    app: credit-risk-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: credit-risk-service
+  template:
+    metadata:
+      labels:
+        app: credit-risk-service
+        tier: backend
+        security: internal
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+      - name: credit-risk-service
+        image: finops/credit-risk-service:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVER_PORT
+          value: "8080"
+        - name: MANAGEMENT_SERVER_PORT
+          value: "8082"
+        - name: GRPC_SERVER_PORT
+          value: "9090"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "800m"
+        ports:
+        - containerPort: 9090
+        - containerPort: 8082
+        - containerPort: 8080

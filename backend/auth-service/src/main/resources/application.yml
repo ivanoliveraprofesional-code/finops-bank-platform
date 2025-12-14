@@ -1,0 +1,35 @@
+server:
+  port: 8082
+
+jwt:
+  private-key: "${JWT_PRIVATE_KEY:}"
+  public-key: "${JWT_PUBLIC_KEY:}"
+
+spring:
+  application:
+    name: auth-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/finops_auth
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always

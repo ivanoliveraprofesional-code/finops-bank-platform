@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  localstack:
+    container_name: "finops-localstack"
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,sqs,rds,ec2,lambda,secretsmanager,sts,iam,eks,cloudwatch,dynamodb,apigateway,logs
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"

@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: finops-bank
+  labels:
+    istio-injection: enabled

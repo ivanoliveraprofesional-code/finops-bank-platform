@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: core-banking-service
+
+  cloud:
+    aws:
+      sqs:
+        enabled: true
+      region:
+        static: us-east-1
+      credentials:
+        access-key: test
+        secret-key: test
+      endpoint: http://localhost:4566
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/finops_core_banking
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+grpc:
+  client:
+    credit-risk-service:
+      address: "static://localhost:9090"
+      negotiation-type: plaintext
+
+app:
+  messaging:
+    queue-name: finops-audit-queue
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [TraceID:%X{traceId}] %logger{36} - %msg%n"
+  level:
+    com.finops.bank: INFO
+    org.hibernate: WARN

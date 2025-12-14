@@ -1,0 +1,18 @@
+name: "Auth Service Pipeline"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'backend/auth-service/**'
+  pull_request:
+    paths:
+      - 'backend/auth-service/**'
+
+jobs:
+  auth-service-ci:
+    uses: ./.github/workflows/reusable-java-build.yml
+    with:
+      service_name: auth-service
+      working_directory: backend/auth-service
+    secrets: inherit

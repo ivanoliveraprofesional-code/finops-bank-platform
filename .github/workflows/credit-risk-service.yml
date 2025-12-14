@@ -1,0 +1,19 @@
+name: "Credit Risk Service Pipeline"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'backend/credit-risk-service/**'
+      - '.github/workflows/reusable-java-build.yml'
+  pull_request:
+    paths:
+      - 'backend/credit-risk-service/**'
+
+jobs:
+  credit-risk-service-ci:
+    uses: ./.github/workflows/reusable-java-build.yml
+    with:
+      service_name: credit-risk-service
+      working_directory: backend/credit-risk-service
+    secrets: inherit

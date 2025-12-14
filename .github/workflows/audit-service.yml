@@ -1,0 +1,19 @@
+name: "Audit Service Pipeline"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'backend/audit-service/**'
+      - '.github/workflows/reusable-java-build.yml'
+  pull_request:
+    paths:
+      - 'backend/audit-service/**'
+
+jobs:
+  audit-service-ci:
+    uses: ./.github/workflows/reusable-java-build.yml
+    with:
+      service_name: audit-service
+      working_directory: backend/audit-service
+    secrets: inherit
