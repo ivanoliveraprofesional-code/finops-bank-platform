@@ -1,3 +1,6 @@
+# -------------------------------------------------------------
+# 1. Gateway (Unchanged - Defines the entry point)
+# -------------------------------------------------------------
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -14,6 +17,9 @@ spec:
     hosts:
     - "*"
 ---
+# -------------------------------------------------------------
+# 2. VirtualService (Unchanged - Defines the routing)
+# -------------------------------------------------------------
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -26,22 +32,13 @@ spec:
   - finops-gateway
   http:
   # ---------------------------
-  # 1. Auth Service Routes
+  # 1. Auth Service Routes (Public & Protected)
   # ---------------------------
-  # Public: Login, Register, JWKS
   - match:
     - uri:
         prefix: /auth
     - uri:
         prefix: /.well-known
-    route:
-    - destination:
-        host: auth-service
-        port:
-          number: 8080
-
-  # Protected: User Management (CRUD)
-  - match:
     - uri:
         prefix: /api/users
     route:
@@ -51,9 +48,8 @@ spec:
           number: 8080
 
   # ---------------------------
-  # 2. Core Banking Routes
+  # 2. Core Banking Routes (Protected)
   # ---------------------------
-  # Protected: Accounts & Transactions
   - match:
     - uri:
         prefix: /api/accounts
@@ -64,3 +60,58 @@ spec:
         host: core-banking
         port:
           number: 8080
+---
+# -------------------------------------------------------------
+# 3. RequestAuthentication (Defines how to validate the JWT)
+# -------------------------------------------------------------
+# This resource tells the Istio sidecars to validate JWTs issued by the 'finops-auth' service
+# and where to fetch the public key (JWKS) to perform this validation.
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: jwt-validation
+  namespace: finops-bank
+spec:
+  jwtRules:
+  - issuer: "finops-auth" # Must match the 'iss' claim in your token
+    jwksUri: "http://auth-service.finops-bank.svc.cluster.local:8080/auth/jwks"
+    # IMPORTANT: Forward the claims as headers for the app to use
+    outputClaimToHeaders:
+    - header: "x-auth-user"
+      claim: "sub" # The username/user ID
+    - header: "x-auth-roles"
+      claim: "roles" # The list of roles
+  selector:
+    # Apply this policy to ALL services that need JWTs checked (Auth and Core)
+    matchLabels:
+      tier: application
+---
+# -------------------------------------------------------------
+# 4. AuthorizationPolicy (Enforces the JWT Requirement)
+# -------------------------------------------------------------
+# This policy tells the Core Banking sidecar:
+# 1. Block requests that don't have a valid JWT.
+# 2. Only allow users with 'ROLE_USER' or 'ROLE_ADMIN' roles.
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: require-jwt-core-banking
+  namespace: finops-bank
+spec:
+  selector:
+    matchLabels:
+      app: core-banking # Apply specifically to the Core Banking Pod
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        # Require authentication to pass this rule.
+        # This will reject unauthenticated users with 401.
+        requestPrincipals: ["*"] 
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/api/*"]
+    when:
+    - key: request.auth.claims[roles]
+      values: ["ROLE_USER", "ROLE_ADMIN"]
