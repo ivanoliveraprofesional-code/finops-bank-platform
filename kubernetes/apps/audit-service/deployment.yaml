@@ -5,7 +5,7 @@ metadata:
   namespace: finops-bank
   labels:
     app: audit-service
-    tier: backend
+    version: v1
 spec:
   replicas: 1
   selector:
@@ -15,39 +15,28 @@ spec:
     metadata:
       labels:
         app: audit-service
-        tier: backend
+        version: v1
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8082"
-        prometheus.io/path: "/actuator/prometheus"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - name: audit-service
         image: ghcr.io/ivanoliveraprofesional-code/audit-service:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
         env:
-        - name: SERVER_PORT
-          value: "8080"
-        - name: MANAGEMENT_SERVER_PORT
-          value: "8082"
         - name: SPRING_CLOUD_AWS_ENDPOINT
-          valueFrom:
-            configMapKeyRef:
-              name: finops-config
-              key: AWS_ENDPOINT_URL
+          value: "http://localstack:4566"
         - name: SPRING_CLOUD_AWS_REGION_STATIC
           value: "us-east-1"
         - name: SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY
           value: "test"
         - name: SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY
           value: "test"
+        - name: APP_MESSAGING_QUEUE_NAME
+          value: "finops-audit-queue"
         resources:
-          requests:
-            memory: "256Mi"
-            cpu: "200m"
           limits:
             memory: "512Mi"
             cpu: "500m"
-        ports:
-        - containerPort: 8080
-        - containerPort: 8082
