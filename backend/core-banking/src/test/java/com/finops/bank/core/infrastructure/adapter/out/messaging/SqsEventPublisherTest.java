@@ -5,7 +5,6 @@ import com.finops.bank.core.application.service.AccountService;
 import com.finops.bank.core.domain.event.AccountTransactionEvent;
 import com.finops.bank.core.infrastructure.adapter.out.persistence.repository.SpringDataAccountRepository;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,13 +13,19 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -30,22 +35,54 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 
 @SpringBootTest
 @Testcontainers
+@ContextConfiguration(initializers = SqsEventPublisherTest.LocalStackInitializer.class)
 @EnableAutoConfiguration(exclude = {
-    DataSourceAutoConfiguration.class,
-    HibernateJpaAutoConfiguration.class,
-    LiquibaseAutoConfiguration.class
+        DataSourceAutoConfiguration.class,
+        HibernateJpaAutoConfiguration.class,
+        LiquibaseAutoConfiguration.class
 })
 class SqsEventPublisherTest {
 
     private static final String QUEUE_NAME = "finops-audit-queue";
 
     @SuppressWarnings("resource")
-	static LocalStackContainer localStack = new LocalStackContainer(
-        DockerImageName.parse("localstack/localstack:3.2")
+	@Container
+    static final LocalStackContainer localStack = new LocalStackContainer(
+            DockerImageName.parse("localstack/localstack:3.2")
     ).withServices(SQS);
 
-    static {
-        localStack.start();
+    static class LocalStackInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext applicationContext) {
+            if (!localStack.isRunning()) {
+                localStack.start();
+            }
+
+            try (SqsClient sqsClient = SqsClient.builder()
+                    .endpointOverride(localStack.getEndpointOverride(SQS))
+                    .region(Region.of(localStack.getRegion()))
+                    .credentialsProvider(
+                            StaticCredentialsProvider.create(
+                                    AwsBasicCredentials.create(localStack.getAccessKey(), localStack.getSecretKey())
+                            )
+                    )
+                    .build()) {
+
+                String queueUrl = sqsClient.createQueue(
+                        CreateQueueRequest.builder()
+                                .queueName(QUEUE_NAME)
+                                .build()
+                ).queueUrl();
+
+                System.setProperty("spring.cloud.aws.region.static", localStack.getRegion());
+                System.setProperty("spring.cloud.aws.credentials.access-key", localStack.getAccessKey());
+                System.setProperty("spring.cloud.aws.credentials.secret-key", localStack.getSecretKey());
+                System.setProperty("spring.cloud.aws.sqs.endpoint", localStack.getEndpointOverride(SQS).toString());
+
+                System.setProperty("app.messaging.queue-name", queueUrl);
+            }
+        }
     }
 
     @Autowired
@@ -63,36 +100,21 @@ class SqsEventPublisherTest {
     @MockBean
     private SpringDataAccountRepository springDataAccountRepository;
 
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.cloud.aws.region.static", localStack::getRegion);
-        registry.add("spring.cloud.aws.credentials.access-key", localStack::getAccessKey);
-        registry.add("spring.cloud.aws.credentials.secret-key", localStack::getSecretKey);
-        registry.add("spring.cloud.aws.sqs.endpoint", () -> localStack.getEndpointOverride(SQS));
-        registry.add("spring.cloud.aws.sqs.region", localStack::getRegion);
-        registry.add("app.messaging.queue-name", () -> QUEUE_NAME);
-    }
-
-    @BeforeAll
-    static void beforeAll() throws IOException, InterruptedException {
-        localStack.execInContainer("awslocal", "sqs", "create-queue", "--queue-name", QUEUE_NAME);
-    }
-
     @Test
     void shouldPublishEventToSqs() {
         AccountTransactionEvent event = new AccountTransactionEvent(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            "DEPOSIT",
-            BigDecimal.TEN,
-            LocalDateTime.now()
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "DEPOSIT",
+                BigDecimal.TEN,
+                LocalDateTime.now()
         );
 
         publisher.publish(event);
 
         var received = sqsTemplate.receive(
-            from -> from.queue(QUEUE_NAME),
-            AccountTransactionEvent.class
+                from -> from.queue(QUEUE_NAME),
+                AccountTransactionEvent.class
         );
 
         assertThat(received).isPresent();
