@@ -1,0 +1,10 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: disable-mtls-postgres
+  namespace: finops-bank
+spec:
+  host: postgres-db.finops-bank.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
