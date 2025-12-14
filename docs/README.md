@@ -18,7 +18,7 @@ Este proyecto demuestra una **Arquitectura Tier-3** de grado de producción ejec
 * **Strict Security:** Implements **Istio Service Mesh** for Ingress, mTLS, and JWT Validation. / **Seguridad Estricta:** Implementa Istio Service Mesh para Ingress, mTLS y validación JWT.
 
 ### Architecture Overview / Visión General de Arquitectura
-![Container View](docs/images/container-view.png)
+![Container View](images/container-view.png)
 
 ---
 
