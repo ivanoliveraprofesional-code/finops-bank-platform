@@ -4,4 +4,4 @@ import com.finops.bank.auth.domain.model.User;
 
 public interface TokenGeneratorPort {
     String generateToken(User user);
-} 
+}

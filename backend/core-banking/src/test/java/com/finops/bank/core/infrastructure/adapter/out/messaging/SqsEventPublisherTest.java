@@ -5,9 +5,14 @@ import com.finops.bank.core.application.service.AccountService;
 import com.finops.bank.core.domain.event.AccountTransactionEvent;
 import com.finops.bank.core.infrastructure.adapter.out.persistence.repository.SpringDataAccountRepository;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC; // Import MDC
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -35,7 +40,9 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 @EnableAutoConfiguration(exclude = {
     DataSourceAutoConfiguration.class,
     HibernateJpaAutoConfiguration.class,
-    LiquibaseAutoConfiguration.class
+    LiquibaseAutoConfiguration.class,
+    ObservationAutoConfiguration.class,
+    MicrometerTracingAutoConfiguration.class
 })
 class SqsEventPublisherTest {
 
@@ -89,6 +96,16 @@ class SqsEventPublisherTest {
                 .build();
 
         sqsClient.createQueue(CreateQueueRequest.builder().queueName(QUEUE_NAME).build()).get();
+    }
+
+    @BeforeEach
+    void setUp() {
+        MDC.put("traceId", UUID.randomUUID().toString());
+    }
+
+    @AfterEach
+    void tearDown() {
+        MDC.clear();
     }
 
     @Test
