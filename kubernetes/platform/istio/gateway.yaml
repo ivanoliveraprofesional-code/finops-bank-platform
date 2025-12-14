@@ -100,18 +100,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: core-banking # Apply specifically to the Core Banking Pod
+      app: core-banking
   action: ALLOW
   rules:
   - from:
     - source:
-        # Require authentication to pass this rule.
-        # This will reject unauthenticated users with 401.
         requestPrincipals: ["*"] 
     to:
     - operation:
         methods: ["GET", "POST", "PUT", "DELETE"]
         paths: ["/api/*"]
-    when:
-    - key: request.auth.claims[roles]
-      values: ["ROLE_USER", "ROLE_ADMIN"]
