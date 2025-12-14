@@ -4,5 +4,4 @@ import com.finops.bank.core.infrastructure.adapter.out.persistence.entity.Accoun
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
-public interface SpringDataAccountRepository extends JpaRepository<AccountEntity, UUID> {
-}
+public interface SpringDataAccountRepository extends JpaRepository<AccountEntity, UUID> {}
