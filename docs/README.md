@@ -130,8 +130,8 @@ kubectl run bastion-sql --rm -it --labels="app=bastion-sql" --image=postgres:alp
 ---
 
 ## 6. Documentation / Documentación
-[**Architecture Diagrams (C4 & Network) / Diagramas de Arquitectura**](docs/architecture.md) - Visual deep dive.
+[**Architecture Diagrams (C4 & Network) / Diagramas de Arquitectura**](architecture.md) - Visual deep dive.
 
-[**Architecture Decision Records (ADRs)**](docs/adr/) - Technical decisions log (Why Monorepo? Why Istio?).
+[**Architecture Decision Records (ADRs)**](adr/) - Technical decisions log (Why Monorepo? Why Istio?).
 
 
