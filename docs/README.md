@@ -98,7 +98,7 @@ docker-compose -f backend/docker-compose-dev.yml up -d
 **Run Services / Correr Servicios**
 
 ```bash
-cd backend/auth-service && powershell -ExecutionPolicy Bypass -File .\run-local-auth.ps1
+cd backend/core-banking && mvn spring-boot:run
 ```
 
 ```bash
