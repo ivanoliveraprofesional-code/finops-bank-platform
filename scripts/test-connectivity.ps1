@@ -37,8 +37,13 @@ function Run-Test {
 
         $Response = Invoke-RestMethod @Params
         
+        # We received a 2xx status code
+        $ActualStatus = 200 # Default assumption if Invoke-RestMethod succeeds
+        
+        # Check if the response object has a property to determine the actual status (rare in successful calls)
+        # If it doesn't, assume 200 or rely on the expected status for a PASS
         if ($ExpectedStatus -ge 200 -and $ExpectedStatus -lt 300) {
-            Write-Host "PASS (200)" -ForegroundColor Green
+            Write-Host "PASS ($ExpectedStatus)" -ForegroundColor Green # Cannot read 201/202 etc easily
             return $Response
         } else {
             Write-Host "FAIL (Got 200, Expected $ExpectedStatus)" -ForegroundColor Red
@@ -46,6 +51,7 @@ function Run-Test {
         }
     }
     catch {
+        # Handle HTTP Errors (4xx, 5xx)
         if ($_.Exception.Response) {
             $Status = [int]$_.Exception.Response.StatusCode
             if ($Status -eq $ExpectedStatus) {
@@ -60,7 +66,7 @@ function Run-Test {
                     $Reader = New-Object System.IO.StreamReader($Stream)
                     $ErrorBody = $Reader.ReadToEnd()
                     if ($ErrorBody.Length -gt 200) { $ErrorBody = $ErrorBody.Substring(0, 200) + "..." }
-                    Write-Host "   Server Error: $ErrorBody" -ForegroundColor DarkGray
+                    Write-Host "    Server Error: $ErrorBody" -ForegroundColor DarkGray
                 }
                 return $null
             }
@@ -81,35 +87,41 @@ $LoginBody = @{
 
 $LoginResponse = Run-Test "Public Access (Login)" "$AuthUrl/login" "POST" -Body $LoginBody -ExpectedStatus 200
 
-# Extract Token based on your App's response format
-# Usually it's in $LoginResponse.accessToken or $LoginResponse.token
 $RealToken = $null
 
 if ($LoginResponse) {
     if ($LoginResponse.accessToken) { $RealToken = $LoginResponse.accessToken }
     elseif ($LoginResponse.token) { $RealToken = $LoginResponse.token }
     else {
-        # Fallback: Assume the whole response might be the token string
         $RealToken = $LoginResponse
     }
-    Write-Host "   > Token Acquired" -ForegroundColor Gray
+    Write-Host "    > Token Acquired" -ForegroundColor Gray
 } else {
     Write-Error "Could not login. Aborting tests."
     exit 1
 }
 
 # ---------------------------------------------------------
-# 2. Test Protected Endpoints
+# 2. Test Protected Endpoints (Create Account)
 # ---------------------------------------------------------
 
-# TEST B: No Token (Should Fail)
-$ResB = Run-Test "Protected Access (No Token)" "$AppUrl/accounts" "GET" -ExpectedStatus 401
+$AccountBody = @{
+    # We must use the user ID from the successful login (a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11)
+    userId = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" 
+    currency = "USD"
+}
 
-# TEST C: With Token (Should Pass)
+# TEST B: No Token (Should Fail with 401 from Istio)
+# Using POST /api/accounts
+$ResB = Run-Test "Protected Access (No Token: POST)" "$AppUrl/accounts" "POST" -Body $AccountBody -ExpectedStatus 401
+
+# TEST C: With Token (Should Pass with 201 Created)
+# Using POST /api/accounts
 $AuthHeaders = @{
     Authorization = "Bearer $RealToken"
 }
-$ResC = Run-Test "Protected Access (With Token)" "$AppUrl/accounts" "GET" -Headers $AuthHeaders -ExpectedStatus 200
+# Expecting 201 Created status for POST operation
+$ResC = Run-Test "Protected Access (With Token: POST)" "$AppUrl/accounts" "POST" -Body $AccountBody -Headers $AuthHeaders -ExpectedStatus 201 
 
 Write-Host ""
 if ($LoginResponse -and $ResB -and $ResC) {

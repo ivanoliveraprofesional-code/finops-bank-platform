@@ -24,6 +24,7 @@ target/
 *.tfstate.backup
 *.tfplan
 .terraform.lock.hcl
+private_key.pem
 
 # --- LocalStack / AWS Utils ---
 warmup_output.json
