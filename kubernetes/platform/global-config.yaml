@@ -4,8 +4,8 @@ metadata:
   name: finops-config
   namespace: finops-bank
 data:
-  SPRING_DATASOURCE_URL_AUTH: "jdbc:postgresql://postgres-db:5432/finops_auth"
-  SPRING_DATASOURCE_URL_CORE: "jdbc:postgresql://postgres-db:5432/finops_core_banking"
+  SPRING_DATASOURCE_URL_AUTH: "jdbc:postgresql://postgres-db.finops-bank.svc.cluster.local:5432/finops_auth"
+  SPRING_DATASOURCE_URL_CORE: "jdbc:postgresql://postgres-db.finops-bank.svc.cluster.local:5432/finops_core_banking"
   
   GRPC_CLIENT_RISK_ADDRESS: "static://credit-risk-service:9090"
   

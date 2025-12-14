@@ -5,7 +5,7 @@ metadata:
   namespace: finops-bank
   labels:
     app: core-banking
-    tier: backend
+    version: v1
 spec:
   replicas: 1
   selector:
@@ -15,57 +15,33 @@ spec:
     metadata:
       labels:
         app: core-banking
-        tier: backend
-        security: protected 
+        version: v1
       annotations:
-        sidecar.istio.io/proxyCPU: "20m"
-        sidecar.istio.io/proxyMemory: "50Mi"
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8082"
-        prometheus.io/path: "/actuator/prometheus"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - name: core-banking
         image: ghcr.io/ivanoliveraprofesional-code/core-banking-service:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
         env:
-        - name: SERVER_PORT
-          value: "8080"
-        - name: MANAGEMENT_SERVER_PORT
-          value: "8082"
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_USER
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_PASSWORD
         - name: SPRING_DATASOURCE_URL
           valueFrom:
             configMapKeyRef:
               name: finops-config
               key: SPRING_DATASOURCE_URL_CORE
-        - name: SPRING_DATASOURCE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: auth-secrets
-              key: DB_PASSWORD
-        - name: GRPC_CLIENT_CREDIT_RISK_SERVICE_ADDRESS
-          valueFrom:
-            configMapKeyRef:
-              name: finops-config
-              key: GRPC_CLIENT_RISK_ADDRESS
-        - name: SPRING_CLOUD_AWS_ENDPOINT
-          valueFrom:
-            configMapKeyRef:
-              name: finops-config
-              key: AWS_ENDPOINT_URL
-        - name: SPRING_CLOUD_AWS_REGION_STATIC
-          value: "us-east-1"
-        - name: SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY
-          value: "test"
-        - name: SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY
-          value: "test"
         resources:
-          requests:
-            memory: "300Mi"
-            cpu: "250m"
           limits:
-            memory: "600Mi"
-            cpu: "1000m"
-        ports:
-        - containerPort: 8080
-        - containerPort: 8082
+            memory: "512Mi"
+            cpu: "500m"

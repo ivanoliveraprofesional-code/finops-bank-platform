@@ -19,7 +19,7 @@ Write-Host "1. Fetching Private Key from Terraform..." -ForegroundColor Yellow
 Push-Location "$PSScriptRoot/../terraform"
 try {
     # We still need the key to generate a valid JWT for the test
-    $PrivateKey = terraform output -raw jwt_private_key_pem
+    $PrivateKey = terraform output -raw jwt_private_key_pkcs8
 }
 finally { Pop-Location }
 

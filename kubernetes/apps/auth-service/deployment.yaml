@@ -5,7 +5,7 @@ metadata:
   namespace: finops-bank
   labels:
     app: auth-service
-    tier: backend
+    version: v1
 spec:
   replicas: 1
   selector:
@@ -15,33 +15,32 @@ spec:
     metadata:
       labels:
         app: auth-service
-        tier: backend
+        version: v1
       annotations:
-        sidecar.istio.io/proxyCPU: "20m"
-        sidecar.istio.io/proxyMemory: "50Mi"
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8082"
-        prometheus.io/path: "/actuator/prometheus"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - name: auth-service
         image: ghcr.io/ivanoliveraprofesional-code/auth-service:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
         env:
-        - name: SERVER_PORT
-          value: "8080"
-        - name: MANAGEMENT_SERVER_PORT
-          value: "8082"
-        - name: SPRING_DATASOURCE_URL
+        - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
-            configMapKeyRef:
-              name: finops-config
-              key: SPRING_DATASOURCE_URL_AUTH
+            secretKeyRef:
+              name: auth-secrets
+              key: DB_USERNAME
         - name: SPRING_DATASOURCE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: auth-secrets
               key: DB_PASSWORD
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: finops-config
+              key: SPRING_DATASOURCE_URL_AUTH
         - name: JWT_PRIVATE_KEY
           valueFrom:
             secretKeyRef:
@@ -53,12 +52,6 @@ spec:
               name: auth-secrets
               key: JWT_PUBLIC_KEY
         resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
           limits:
             memory: "512Mi"
-            cpu: "1000m"
-        ports:
-        - containerPort: 8080
-        - containerPort: 8082
+            cpu: "500m"

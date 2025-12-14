@@ -40,11 +40,11 @@ $JwtPublic  = Get-SecretValue "finops-bank/auth/jwt-public-key"
 
 # 3. Create 'db-credentials' (For Postgres Pod)
 try {
-    kubectl create secret generic db-credentials `
+    kubectl create secret generic db-credentials -n finops-bank `
         --from-literal=POSTGRES_USER=$DbUser `
         --from-literal=POSTGRES_PASSWORD=$DbPass `
         --dry-run=client -o yaml | kubectl apply -f -
-    Write-Host "[OK] Secret 'db-credentials' created." -ForegroundColor Green
+    Write-Host "[OK] Secret 'db-credentials' created in 'finops-bank'." -ForegroundColor Green
 } catch { Write-Error "Failed to create db-credentials"; exit 1 }
 
 # 4. Create 'auth-secrets' (For Java Microservices)
@@ -52,6 +52,7 @@ try {
     kubectl create secret generic auth-secrets -n finops-bank `
         --from-literal=JWT_PRIVATE_KEY=$JwtPrivate `
         --from-literal=JWT_PUBLIC_KEY=$JwtPublic `
+        --from-literal=DB_USERNAME=$DbUser `
         --from-literal=DB_PASSWORD=$DbPass `
         --dry-run=client -o yaml | kubectl apply -f -
     Write-Host "[OK] Secret 'auth-secrets' created in namespace 'finops-bank'." -ForegroundColor Green
