@@ -4,7 +4,7 @@
 High-level view of users and external dependencies.
 Vista de alto nivel de usuarios y dependencias externas.
 
-![System Context](images/system-context.drawio.svg)
+![System Context](images/system-context.drawio.png)
 
 ---
 
@@ -12,7 +12,7 @@ Vista de alto nivel de usuarios y dependencias externas.
 Logical distribution of microservices and the **Hybrid Database Strategy**.
 Distribución lógica de microservicios y la **Estrategia Híbrida de Base de Datos**.
 
-![Container Diagram](images/container-view.drawio.svg)
+![Container Diagram](images/container-view.drawio.png)
 
 ---
 
@@ -20,4 +20,4 @@ Distribución lógica de microservicios y la **Estrategia Híbrida de Base de Da
 Physical isolation layers, subnets, and firewalls.
 Capas de aislamiento físico, subredes y firewalls.
 
-![Network Topology](images/network-topology.drawio.svg)
+![Network Topology](images/network-topology.drawio.png)

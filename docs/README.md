@@ -13,12 +13,12 @@ This project demonstrates a production-grade **Tier-3 Architecture** running loc
 Este proyecto demuestra una **Arquitectura Tier-3** de grado de producción ejecutándose localmente. Cierra la brecha entre el Desarrollo de Software y la Ingeniería de Plataforma, enfocándose en **Optimización de Costos (FinOps)**, **Seguridad Zero Trust** y **GitOps**.
 
 **Key Achievements / Logros Clave:**
-* **$0 Cloud Bill:** Uses LocalStack to emulate AWS services (S3, KMS, Secrets Manager, DynamoDB, API Gateway). / **Factura de Nube $0:** Usa LocalStack para emular servicios AWS.
+* **$0 Cloud Bill:** Uses LocalStack to emulate AWS services (S3, KMS, Secrets Manager, DynamoDB). / **Factura de Nube $0:** Usa LocalStack para emular servicios AWS.
 * **Hybrid Database Strategy:** Architecture agnostic to RDS (Prod) vs Containers (Dev). / **Estrategia Híbrida:** Arquitectura agnóstica entre RDS (Prod) y Contenedores (Dev).
-* **Strict Security:** Implements **Split-Ingress**, Lambda Authorizers (JWT Validation), mTLS (Istio), and Network Policies. / **Seguridad Estricta:** Implementa Ingress Dividido, Lambda Authorizers, mTLS y Políticas de Red.
+* **Strict Security:** Implements **Istio Service Mesh** for Ingress, mTLS, and JWT Validation. / **Seguridad Estricta:** Implementa Istio Service Mesh para Ingress, mTLS y validación JWT.
 
 ### Architecture Overview / Visión General de Arquitectura
-![Architecture Preview](docs/images/container-view.drawio.svg)
+![Container View](docs/images/container-view.png)
 
 ---
 
@@ -31,10 +31,15 @@ Este repositorio sigue un patrón de **Monorepo Estructurado** para unificar Inf
 finops-bank-platform/
 ├── backend/                # Java 21 Microservices (Hexagonal Arch)
 │   ├── auth-service/       # Identity Provider (OIDC)
-│   └── core-banking/       # Transaction Ledger
+│   ├── core-banking/       # Transaction Ledger
+│   ├── audit-service/      # SQS Consumer (Worker)
+│   └── credit-risk/        # gRPC Risk Engine
 ├── terraform/              # Infrastructure as Code (AWS/LocalStack)
-│   ├── lambda/             # Python Serverless Functions (Authorizers)
 │   └── main.tf             # Resource Definitions
+├── kubernetes/             # K8s Manifests (ArgoCD Ready)
+│   ├── platform/           # DB, Istio, ConfigMaps
+│   ├── security/           # Istio Policies (JWT, mTLS)
+│   └── apps/               # Application Deployments
 ├── scripts/                # Automation Scripts (PowerShell)
 ├── docs/                   # Architecture Diagrams (C4) & ADRs
 ├── .github/workflows/      # CI/CD Pipelines (Path-Based)
@@ -49,12 +54,12 @@ finops-bank-platform/
 | **Infrastructure** | Terraform (HCL) | Infrastructure as Code (IaC) with State Locking |
 | **Cloud Emulation** | LocalStack | AWS API Mocking (S3, DynamoDB, Secrets, KMS) |
 | **Orchestration** | Kubernetes (Kind) | Container Orchestration |
-| **Edge Security** | AWS API Gateway + Lambda | Rate Limiting & JWT Signature Validation (Python) |
-| **Service Mesh** | Istio | mTLS, Traffic Management, Observability |
+| **Ingress & Security** | Istio Service Mesh | Gateway, mTLS, JWT Validation (Zero Trust) |
 | **Backend** | Java 21 + Spring Boot 3.2 | Hexagonal Architecture Microservices |
 | **Database** | PostgreSQL 13 | Relational Data (Auth & Transactions) |
 | **NoSQL** | DynamoDB | Audit Logs & High-Volume Data |
 | **Migration** |	Liquibase |	Database Schema Management |
+| **Communication** |	gRPC (Protobuf) |	Low-latency internal service communication |
 
 ---
 
