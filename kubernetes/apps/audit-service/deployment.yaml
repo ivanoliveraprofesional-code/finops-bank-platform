@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: audit-service
-        image: finops/audit-service:latest
+        image: ghcr.io/ivanoliveraprofesional-code/audit-service:latest
         imagePullPolicy: IfNotPresent
         env:
         - name: SERVER_PORT

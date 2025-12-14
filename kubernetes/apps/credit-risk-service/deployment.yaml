@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: credit-risk-service
-        image: finops/credit-risk-service:latest
+        image: ghcr.io/ivanoliveraprofesional-code/credit-risk-service:latest
         imagePullPolicy: IfNotPresent
         env:
         - name: SERVER_PORT
