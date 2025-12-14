@@ -105,6 +105,8 @@ spec:
   rules:
   - from:
     - source:
+        # RequestPrincipals should be sufficient to enforce a valid token.
+        # It means "allow any authenticated request".
         requestPrincipals: ["*"] 
     to:
     - operation:
