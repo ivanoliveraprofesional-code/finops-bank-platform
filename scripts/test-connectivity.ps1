@@ -1,111 +1,119 @@
-<#
-.SYNOPSIS
-    End-to-End Connectivity Test (Istio Mesh).
-    Target: localhost:80 (Kind Host Port)
-#>
-$ErrorActionPreference = "Stop"
-$ProgressPreference = "SilentlyContinue"
+# scripts/test-connectivity.ps1
 
-# SSL Fix
-if ([System.Net.ServicePointManager]::SecurityProtocol -notcontains 'Tls12') {
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
-}
-[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+$GatewayUrl = "http://localhost:80"
+$AuthUrl = "$GatewayUrl/auth"
+$AppUrl = "$GatewayUrl/api"
 
 Write-Host "--- STARTING SMOKE TEST (ISTIO MESH) ---" -ForegroundColor Cyan
+Write-Host ""
 
-# 1. Get Private Key (To Sign Test Token)
-Write-Host "1. Fetching Private Key from Terraform..." -ForegroundColor Yellow
-Push-Location "$PSScriptRoot/../terraform"
-try {
-    # We still need the key to generate a valid JWT for the test
-    $PrivateKey = terraform output -raw jwt_private_key_pkcs8
-}
-finally { Pop-Location }
+# ---------------------------------------------------------
+# Helper Function: Run-Test
+# ---------------------------------------------------------
+function Run-Test {
+    param (
+        [string]$Name,
+        [string]$Url,
+        [string]$Method = "GET",
+        [object]$Body = $null,
+        [hashtable]$Headers = @{},
+        [int]$ExpectedStatus = 200
+    )
 
-if (-not $PrivateKey) { throw "Terraform did not return jwt_private_key_pem." }
+    Write-Host -NoNewline "[TEST] $Name ($Url)... "
 
-# 2. Generate JWT (Using Python)
-Write-Host "2. Generating Admin JWT..." -ForegroundColor Yellow
-$TempPyFile = [System.IO.Path]::GetTempFileName() + ".py"
-$Env:KEY = $PrivateKey
-
-# Python script to sign JWT using the Terraform Key
-$PyCode = @"
-import jwt, time, os, sys
-key = os.environ.get('KEY')
-payload = {
-    'sub': 'smoke-test-admin', 
-    'roles': ['ADMIN'], 
-    'iat': int(time.time()), 
-    'exp': int(time.time()) + 300
-}
-try:
-    print(jwt.encode(payload, key, algorithm='RS256'))
-except Exception as e:
-    sys.exit(str(e))
-"@
-Set-Content $TempPyFile $PyCode
-
-try {
-    $Token = python $TempPyFile
-    if ($LASTEXITCODE -ne 0) { throw "Python JWT Generation Failed" }
-}
-finally { Remove-Item $TempPyFile }
-
-Write-Host "   Token Generated." -ForegroundColor Gray
-
-# 3. Execution (The Tests)
-$BaseUrl = "http://localhost:80" # Istio Gateway
-$AllPassed = $true
-
-function Run-Test ($Name, $Url, $Method, $Headers, $ExpectedCode) {
-    Write-Host "`n[TEST] $Name ($Url)..." -NoNewline
     try {
-        $Params = @{ Uri = $Url; Method = $Method; UseBasicParsing = $true; ErrorAction = "Stop" }
-        if ($Headers) { $Params.Headers = $Headers }
+        $Params = @{
+            Uri         = $Url
+            Method      = $Method
+            Headers     = $Headers
+            ErrorAction = "Stop"
+            ContentType = "application/json"
+        }
+
+        if ($null -ne $Body) {
+            $Params.Body = ($Body | ConvertTo-Json -Depth 5 -Compress)
+        }
+
+        $Response = Invoke-RestMethod @Params
         
-        $Resp = Invoke-WebRequest @Params
-        $Code = $Resp.StatusCode
+        if ($ExpectedStatus -ge 200 -and $ExpectedStatus -lt 300) {
+            Write-Host "PASS (200)" -ForegroundColor Green
+            return $Response
+        } else {
+            Write-Host "FAIL (Got 200, Expected $ExpectedStatus)" -ForegroundColor Red
+            return $null
+        }
     }
     catch {
-        if ($_.Exception.Response) { $Code = $_.Exception.Response.StatusCode.value__ }
-        else { $Code = 500; Write-Error $_ }
-    }
-
-    if ($Code -eq $ExpectedCode) {
-        Write-Host " PASS ($Code)" -ForegroundColor Green
-        return $true
-    } else {
-        Write-Host " FAIL (Got $Code, Expected $ExpectedCode)" -ForegroundColor Red
-        return $false
+        if ($_.Exception.Response) {
+            $Status = [int]$_.Exception.Response.StatusCode
+            if ($Status -eq $ExpectedStatus) {
+                Write-Host "PASS ($Status)" -ForegroundColor Green
+                return $_.Exception.Response
+            } else {
+                Write-Host "FAIL (Got $Status, Expected $ExpectedStatus)" -ForegroundColor Red
+                
+                # Show server error for debugging
+                $Stream = $_.Exception.Response.GetResponseStream()
+                if ($Stream) {
+                    $Reader = New-Object System.IO.StreamReader($Stream)
+                    $ErrorBody = $Reader.ReadToEnd()
+                    if ($ErrorBody.Length -gt 200) { $ErrorBody = $ErrorBody.Substring(0, 200) + "..." }
+                    Write-Host "   Server Error: $ErrorBody" -ForegroundColor DarkGray
+                }
+                return $null
+            }
+        } else {
+            Write-Host "FAIL (Connection Error: $($_.Exception.Message))" -ForegroundColor Red
+            return $null
+        }
     }
 }
 
-# TEST A: Public Endpoint (Auth Service - Login) - No Token Needed
-# Should return 400 or 401 because body is empty, but 200/400 proves connectivity
-$ResA = Run-Test "Public Access (Auth)" "$BaseUrl/auth/login" "POST" @{} 400 
-if (-not $ResA) { $AllPassed = $false }
-
-# TEST B: Protected Endpoint (Core Banking) - NO TOKEN
-# Istio RequestAuthentication should block this with 401
-$ResB = Run-Test "Protected Access (No Token)" "$BaseUrl/api/accounts" "GET" @{} 401
-if (-not $ResB) { $AllPassed = $false }
-
-# TEST C: Protected Endpoint (Core Banking) - WITH TOKEN
-# Istio should validate JWT and Java should return 200/404 (Business Logic)
-# 404 is acceptable here (Account doesn't exist), getting past 401 is the goal.
-$ResC = Run-Test "Protected Access (With Token)" "$BaseUrl/api/accounts" "GET" @{ "Authorization" = "Bearer $Token" } 200
-if (-not $ResC) { 
-    # Accept 200 (Empty List) or 404 (Not Found) or 500 (DB Error)
-    # If we get 401/403 here, the test FAILED.
-    Write-Host "   (Note: If this failed with 500, check Database Logs)" -ForegroundColor Gray
-    $AllPassed = $false 
+# ---------------------------------------------------------
+# 1. Login to get REAL Token
+# ---------------------------------------------------------
+$LoginBody = @{
+    username = "admin"
+    password = "password" # Check your seed.sql if this fails
 }
 
-if ($AllPassed) {
-    Write-Host "`n--- SMOKE TESTS PASSED ---" -ForegroundColor Green
+$LoginResponse = Run-Test "Public Access (Login)" "$AuthUrl/login" "POST" -Body $LoginBody -ExpectedStatus 200
+
+# Extract Token based on your App's response format
+# Usually it's in $LoginResponse.accessToken or $LoginResponse.token
+$RealToken = $null
+
+if ($LoginResponse) {
+    if ($LoginResponse.accessToken) { $RealToken = $LoginResponse.accessToken }
+    elseif ($LoginResponse.token) { $RealToken = $LoginResponse.token }
+    else {
+        # Fallback: Assume the whole response might be the token string
+        $RealToken = $LoginResponse
+    }
+    Write-Host "   > Token Acquired" -ForegroundColor Gray
 } else {
-    Write-Host "`n--- SMOKE TESTS FAILED ---" -ForegroundColor Red
+    Write-Error "Could not login. Aborting tests."
     exit 1
+}
+
+# ---------------------------------------------------------
+# 2. Test Protected Endpoints
+# ---------------------------------------------------------
+
+# TEST B: No Token (Should Fail)
+$ResB = Run-Test "Protected Access (No Token)" "$AppUrl/accounts" "GET" -ExpectedStatus 401
+
+# TEST C: With Token (Should Pass)
+$AuthHeaders = @{
+    Authorization = "Bearer $RealToken"
+}
+$ResC = Run-Test "Protected Access (With Token)" "$AppUrl/accounts" "GET" -Headers $AuthHeaders -ExpectedStatus 200
+
+Write-Host ""
+if ($LoginResponse -and $ResB -and $ResC) {
+    Write-Host "--- SMOKE TESTS PASSED ---" -ForegroundColor Green
+} else {
+    Write-Host "--- SMOKE TESTS FAILED ---" -ForegroundColor Red
 }

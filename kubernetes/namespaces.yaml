@@ -4,3 +4,4 @@ metadata:
   name: finops-bank
   labels:
     istio-injection: enabled
+    name: finops-bank
